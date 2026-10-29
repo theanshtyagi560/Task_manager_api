@@ -1,0 +1,328 @@
+{
+  "info": {
+    "_postman_id": "a5e8f49a-4c28-4e12-881b-51d8b9e6e881",
+    "name": "Task Manager REST API - Week 3",
+    "description": "Comprehensive Postman collection for the Task Manager REST API with Django REST Framework, Token Authentication, and Task Isolation.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "task_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01. Auth - Register",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.collectionVariables.set('token', jsonData.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"intern_developer\",\n  \"email\": \"intern@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/register/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "register",
+            ""
+          ]
+        },
+        "description": "Registers a new user and returns their profile along with an authentication token."
+      },
+      "response": []
+    },
+    {
+      "name": "02. Auth - Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.collectionVariables.set('token', jsonData.token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"intern_developer\",\n  \"password\": \"SecurePass123!\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/login/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "login",
+            ""
+          ]
+        },
+        "description": "Authenticates credentials and returns the user's Token for authorization headers."
+      },
+      "response": []
+    },
+    {
+      "name": "03. Tasks - Create Task (201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    var jsonData = pm.response.json();",
+              "    pm.collectionVariables.set('task_id', jsonData.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Complete Week 3 Internship Task\",\n  \"description\": \"Build DRF REST API with 7 endpoints and automated tests.\",\n  \"status\": \"in_progress\",\n  \"due_date\": \"2026-10-31\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tasks/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tasks",
+            ""
+          ]
+        },
+        "description": "Creates a new task linked to the authenticated user."
+      },
+      "response": []
+    },
+    {
+      "name": "04. Tasks - List All My Tasks (200)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/tasks/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tasks",
+            ""
+          ]
+        },
+        "description": "Retrieves only the tasks created by the authenticated user."
+      },
+      "response": []
+    },
+    {
+      "name": "05. Tasks - Filter by Status (200)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/tasks/?status=in_progress",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tasks",
+            ""
+          ],
+          "query": [
+            {
+              "key": "status",
+              "value": "in_progress"
+            }
+          ]
+        },
+        "description": "Filters user tasks by status (e.g., todo, in_progress, done)."
+      },
+      "response": []
+    },
+    {
+      "name": "06. Tasks - Retrieve Task by ID (200)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/tasks/{{task_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tasks",
+            "{{task_id}}",
+            ""
+          ]
+        },
+        "description": "Retrieves details of a single task. Returns 404 if not found or owned by another user."
+      },
+      "response": []
+    },
+    {
+      "name": "07. Tasks - Update Task (200)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token {{token}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"done\",\n  \"description\": \"Week 3 REST API completed with all endpoints and screenshots!\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/tasks/{{task_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tasks",
+            "{{task_id}}",
+            ""
+          ]
+        },
+        "description": "Updates an existing task owned by the authenticated user."
+      },
+      "response": []
+    },
+    {
+      "name": "08. Tasks - Delete Task (204)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Token {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/tasks/{{task_id}}/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tasks",
+            "{{task_id}}",
+            ""
+          ]
+        },
+        "description": "Deletes a task owned by the authenticated user."
+      },
+      "response": []
+    },
+    {
+      "name": "09. Security - Unauthorized Access Test (401)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/tasks/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "tasks",
+            ""
+          ]
+        },
+        "description": "Validates that endpoints reject unauthenticated requests with HTTP 401 Unauthorized."
+      },
+      "response": []
+    }
+  ]
+}
